@@ -28,7 +28,8 @@ Ryu + scripts used in our implementation:
 Misc scripts:
 
   * ```misc_scripts/mptcp.sql```                        - dump of MySQL database, need to be imported into MySQL server before running the program
-  * ```misc_scripts/addarp.sh```                        - add static ARP entries
+  * ```misc_scripts/addarp_host1.sh```                        - add static ARP entries on host1
+  * ```misc_scripts/addarp_host2.sh```                        - add static ARP entries on host2
 
 
 
