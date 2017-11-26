@@ -13,22 +13,22 @@ What do you need:
 
 Documentation: 
 
-```docs/```
+  * ```docs/```
 
 Mininet scripts:
 
-```mininet_scripts/four_switches.py```             - creating four paths between hosts
-```mininet_scripts/one_switch.py```                - one switch connected to hosts
+  * ```mininet_scripts/four_switches.py```             - creating four paths between hosts
+  * ```mininet_scripts/one_switch.py```                - one switch connected to hosts
 
 Ryu + scripts used in our implementation:
 
-```ryu/ryu/app/aks3.py```                           - deterministic adding paths to subflows
-```ryu/ryu/app/shortest_path_forwarding_13.py```    - random approach
+  * ```ryu/ryu/app/aks3.py```                           - deterministic adding paths to subflows
+  * ```ryu/ryu/app/shortest_path_forwarding_13.py```    - random approach
 
 Misc scripts:
 
-```misc_scripts/mptcp.sql```                        - dump of MySQL database, need to be imported into MySQL server before running the program
-```misc_scripts/addarp.sh```                        - add static ARP entries
+  * ```misc_scripts/mptcp.sql```                        - dump of MySQL database, need to be imported into MySQL server before running the program
+  * ```misc_scripts/addarp.sh```                        - add static ARP entries
 
 
 
