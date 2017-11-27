@@ -13,7 +13,7 @@ What do you need:
 
 Documentation: 
 
-  * ```docs/```
+  * ```/docs``` or Wiki for
 
 Mininet scripts:
 
