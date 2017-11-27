@@ -16,11 +16,11 @@ mysql --defaults-file=/etc/mysql/debian.cnf -e "create database mptcp;"
 mysql --defaults-file=/etc/mysql/debian.cnf mptcp < mptcp.sql
 echo "Now configure your grub to use MPTCP kernel and reboot!"
 
-echo "Downloading openvswitch..' 
-apt-get install build-essentials
-wget http://openvswitch.org/releases/openvswitch-2.8.1.tar.gz
-tar xvzf openvswitch-2.8.1.tar.gz
-cd openvswitch-2.8.1
-./configure
-make 
-make install
+#echo "Downloading openvswitch..' 
+#apt-get install build-essentials
+#wget http://openvswitch.org/releases/openvswitch-2.8.1.tar.gz
+#tar xvzf openvswitch-2.8.1.tar.gz
+#cd openvswitch-2.8.1
+#./configure
+#make 
+#make install
