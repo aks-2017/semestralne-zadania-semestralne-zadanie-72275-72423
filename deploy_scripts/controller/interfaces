@@ -1,0 +1,36 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# Host1Eth0-ControllerEth0
+auto eth0
+iface eth0 inet manual
+
+# Host1Eth1-ControllerEth1
+auto eth1
+iface eth1 inet manual
+
+# Host1Eth2-ControllerEth2
+auto eth2
+iface eth2 inet manual
+
+# Host2Eth0-ControllerEth3
+auto eth3
+iface eth3 inet manual
+
+# Host2Eth1-ControllerEth4
+auto eth4
+iface eth4 inet manual
+
+# Host2Eth2-ControllerEth5
+auto eth5
+iface eth5 inet manual
+# NAT
+auto eth6
+iface eth6 inet dhcp
+# Host-only
+auto eth7
+iface eth7 inet dhcp
