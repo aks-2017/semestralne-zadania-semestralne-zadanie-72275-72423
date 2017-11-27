@@ -89,7 +89,7 @@ performance in multi-interface settings.
 \end{abstract}
 
 \section{Introduction}
-\indent The Transmission Control Protocol (TCP) is used by the vast majority of applications
+~\indent The Transmission Control Protocol (TCP) is used by the vast majority of applications
 to transport their data reliably across the Internet. TCP was designed in
 the 1970s, and neither mobile devices nor computers with many network interfaces
 were an immediate design priority. On the other hand, the TCP designers
@@ -135,7 +135,7 @@ in the Linux kernel is available today\cite{2}.
 \section{Analysis}
 \subsection{Chapter introduction}
 
-\indent This chapter is a brief analysis of Software defined networking and how it can
+~\indent This chapter is a brief analysis of Software defined networking and how it can
 benefit from multipath transmission control protocols, especially in datacenter-like
 topologies by exploiting path diversity.
 
@@ -145,7 +145,7 @@ introduced. Chapter \ref{analysis:mptcp} will briefly talk about Multipath TCP p
 \subsection{Software defined networking}
 \label{analysis:sdn}
 
-\indent Today’s networks mainly consist of routers, switches, hosts and many other network devices. In order for hosts to communicate, routers and switches performs as a transfer point between source and destination. These devices must provide very fast and reliable transfer of information, which, since the need for fast Internet connection is bigger and bigger every year, can be challenging.
+~\indent Today’s networks mainly consist of routers, switches, hosts and many other network devices. In order for hosts to communicate, routers and switches performs as a transfer point between source and destination. These devices must provide very fast and reliable transfer of information, which, since the need for fast Internet connection is bigger and bigger every year, can be challenging.
 
 \indent The basic network device consists of data plane and control plane. Data plane is responsible for receiving the incoming packet and forwarding it to device’s control plane, where the packet is processed. Control plane then forwards the packet again to the data plane, which then sends the packet via correct outgoing interface. This causes network device to store a lot of information and the CPU load can become quite high.
 
@@ -160,7 +160,7 @@ and routing of the communication. The controller installs various forwarding rul
 \subsection{Multipath TCP}
 \label{analysis:mptcp}
 
-\indent There are several options when sending communication on multiple path simultaneously while providing better redundancy and throughput. One can use Stream control transmission protocol (SCTP) which uses the concept of streams. When there is a need for L2 redundancy, bonding has proven itself as a good alternative.
+~\indent There are several options when sending communication on multiple path simultaneously while providing better redundancy and throughput. One can use Stream control transmission protocol (SCTP) which uses the concept of streams. When there is a need for L2 redundancy, bonding has proven itself as a good alternative.
 
 \indent In this document we propose Multipath TCP as a great alternative for improving path diversity in multipath communication in datacenter-like topologies.
 
@@ -168,7 +168,7 @@ and routing of the communication. The controller installs various forwarding rul
 
 \subsection{Problems with Multipath TCP and SDNs}
 \label{analysis:problems}
-\indent Software defined networking can greatly benefit from Multipath TCP
+~\indent Software defined networking can greatly benefit from Multipath TCP
 capabilities. However, software defined networks do not handle MPTCP traffic
 differently than the classic single-path TCP traffic. In order to exploit path diversity
 better and to provide true redundancy to the network, further implementation on the
@@ -196,7 +196,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 
 \section{Design}
 \subsection{Topology}
-\indent The right choice of topology is crucial for datacenter network performance. One of the most used datacenter network topology is FatTree topology, which is shown below on picture 1. The topology consists of pods, which are connected on multiple core switches. The higher the level, the faster the bandwidth.
+~\indent The right choice of topology is crucial for datacenter network performance. One of the most used datacenter network topology is FatTree topology, which is shown below on picture 1. The topology consists of pods, which are connected on multiple core switches. The higher the level, the faster the bandwidth.
 
 \begin{figure}[h]
 \centerline{\includegraphics[width=7cm]{fattree}}
@@ -206,18 +206,18 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 
 \subsection{Controller}
 
-\indent To make SDN MPTCP-aware, it is necessary to let controller know that multipath communication occurs in the network. This can be achieved by packet inspection on controller. When a packet arrives on a forwarder and no rule is matched, the packet is sent to SDN controller which calculates the path for the subflow by using its global view of the topology. SDN controller then installs the rules onto every single forwarder that lies on the chosen path. The implementation will use Floodlight controller written in Java.
+~\indent To make SDN MPTCP-aware, it is necessary to let controller know that multipath communication occurs in the network. This can be achieved by packet inspection on controller. When a packet arrives on a forwarder and no rule is matched, the packet is sent to SDN controller which calculates the path for the subflow by using its global view of the topology. SDN controller then installs the rules onto every single forwarder that lies on the chosen path. The implementation will use Floodlight controller written in Java.
 
 \indent The shortest paths available will be computed using a graph traversal algorithm. Sets of paths will be stored on controller and these will be deterministically assigned to subflows. While using multiple redundant paths, MPTCP’s performance should be maximized using a small number of subflows. Each path should be assigned to only one subflow, this can be achieved by storing IP addresses to paths.
 
 \indent When a new packet arrives on the controller, it will extract the needed information from the packet (IPs, ports, MPTCP options). If the option says we are dealing with a new subflow (MP\_CAPABLE), it will find the shortest path between IPs and store the path into a hashtable. This path is then assigned to a subflow. If the options says we are dealing with additional subflow (M \_JOIN), we extract the token from the packet and find another shortest path for the subflow. The rules are installed on all switches belonging to the chosen path.
 
 \subsection{Testbed}
-\indent To properly evaluate the algorithm, a virtual testbed will be needed. The tests will be performed on a Linux virtual machine running Floodlight controller and Mininet emulator. We create two more Linux virtual machines with multiple interfaces that will be connected to ports on the switches emulated in Mininet. After running FatTree topology in Mininet, we will evaluate how many subflows are needed in order to maximize MPTCP performance. We will then compare this approach to random approach used by ECMP protocol. 
+~\indent To properly evaluate the algorithm, a virtual testbed will be needed. The tests will be performed on a Linux virtual machine running Floodlight controller and Mininet emulator. We create two more Linux virtual machines with multiple interfaces that will be connected to ports on the switches emulated in Mininet. After running FatTree topology in Mininet, we will evaluate how many subflows are needed in order to maximize MPTCP performance. We will then compare this approach to random approach used by ECMP protocol. 
 
 \section{System overview}
 \subsection{Topology}
-\indent In our implementation, various topologies were used. To prove our implementation, we started with very simple one switch topology with two Linux virtual machines as hosts. Each host is connected to the switch using two links. 
+~\indent In our implementation, various topologies were used. To prove our implementation, we started with very simple one switch topology with two Linux virtual machines as hosts. Each host is connected to the switch using two links. 
 
 \subsubsection{Four-switches topology}
 
@@ -231,7 +231,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 
 
 \subsubsection{Controller}
-\indent We have based our controller implementation on RYU controller programmed in Python. The controller has a global view of the network thanks to LLDP exchange during initial switch connection. 
+~\indent We have based our controller implementation on RYU controller programmed in Python. The controller has a global view of the network thanks to LLDP exchange during initial switch connection. 
 
 \indent Pre-routing procedures of the controller are described in following sentences. When the controller starts, it flushes all database tables from previous connections. It then adds hosts to the topology. After this procedure, controller uses LLDP packets to obtain a global view of the network topology. Controller also installs a rule that tells switches to forward all TCP communication to the controller. 
 
@@ -241,23 +241,29 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 
 \indent Controller now installs two rules to the forwarder: one rule for source-destination communication and one for destination-sources communication. Both these rules tell the forwarder to send the communication with mentioned IPs and ports to the controller. 
 \indent When SYN-ACK arrives on the controller, our controller parses the needed information and stores it into MySQL database again. 
+
 \indent When ACK arrives on the controller, it calculates every single possible path between source and destination node and then randomly chooses one of them. This prevents single point of failure in the network and better path diversity in the network. Controller then sends a FLOW\_MOD packet to all switches on the selected path send communication out of the proper port. This prevents further communication forwarding to the controller, since it is not needed anymore. 
+
 \indent When joining a new subflow to the connection, the process is very similar to initiating the connection.
+
 \indent The only difference is in the processing of the MP\_JOIN ACK packet, since further actions are needed in order to map subflows to the connection. 
+
 \indent Controller calculates the hash for the subflow and compares it to the hash included in the MP\_JOIN ACK packet. If the hashes are the same, subflows are authenticated and joined to the connection. 
 
 \section{Evaluation}
 
 	\subsection{Setup}
-	\indent For our evaluation we used the Mininet emulator 2.2.2 installed on the same machine that is running our controller. It is possible to run Mininet on different machine than controller, although few changes to the implementation are needed. 		On the machine that runs our controller also run OpenvSwitch 2.5.
+	 ~\indent For our evaluation we used the Mininet emulator 2.2.2 installed on the same machine that is running our controller. It is possible to run Mininet on different machine than controller, although few changes to the implementation are needed. On the machine that runs our controller also run OpenvSwitch 2.5.
+	
 	\indent Both communicating endpoints were Linux virtual machines running Kernel 4.9 with MPTCP kernel implementation. MPTCP kernel also ran on Controller machine, although this was not necessary. Both host machines had two interfaces connected to our controller machine using virtual internal networks. 
 
 	
 		\subsubsection{Topology}
-		\indent We evaluated our implementation on smaller topologies described previously in this paper. Evaluation on bigger datacenter topologies like Fattree or Jellyfish can be evaluted later.
+		 \indent We evaluated our implementation on smaller topologies described previously in this paper. Evaluation on bigger datacenter topologies like Fattree or Jellyfish can be evaluted later.
 
 		\subsubsection{Experiments}
-		\indent Our implementation was tested using iperf network program, that creates communication between hosts and can also limit bandwidth of the communication, create parallel TCP communications, etc. 
+		 \indent Our implementation was tested using iperf network program, that creates communication between hosts and can also limit bandwidth of the communication, create parallel TCP communications, etc. 
+		
 		\indent We ran iperf in server mode on Host2 and connected to it from iperf ran in client mode on Host1. We tested our implementation while also limiting the communication speed.
 
 
