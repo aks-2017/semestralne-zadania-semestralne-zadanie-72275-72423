@@ -215,66 +215,58 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 \subsection{Testbed}
 \indent To properly evaluate the algorithm, a virtual testbed will be needed. The tests will be performed on a Linux virtual machine running Floodlight controller and Mininet emulator. We create two more Linux virtual machines with multiple interfaces that will be connected to ports on the switches emulated in Mininet. After running FatTree topology in Mininet, we will evaluate how many subflows are needed in order to maximize MPTCP performance. We will then compare this approach to random approach used by ECMP protocol. 
 
+\section{System overview}
+\subsection{Topology}
+\indent In our implementation, various topologies were used. To prove our implementation, we started with very simple one switch topology with two Linux virtual machines as hosts. Each host is connected to the switch using two links. 
 
-% Start of "Sample References" section
+\subsubsection{Four-switches topology}
 
-\section{Typical references in new ACM Reference Format}
-A paginated journal article \cite{Abril07}, an enumerated
-journal article \cite{Cohen07}, a reference to an entire issue \cite{JCohen96},
-a monograph (whole book) \cite{Kosiur01}, a monograph/whole book in a series (see 2a in spec. document)
-\cite{Harel79}, a divisible-book such as an anthology or compilation \cite{Editor00}
-followed by the same example, however we only output the series if the volume number is given
-\cite{Editor00a} (so Editor00a's series should NOT be present since it has no vol. no.),
-a chapter in a divisible book \cite{Spector90}, a chapter in a divisible book
-in a series \cite{Douglass98}, a multi-volume work as book \cite{Knuth97},
-an article in a proceedings (of a conference, symposium, workshop for example)
-(paginated proceedings article) \cite{Andler79}, a proceedings article
-with all possible elements \cite{Smith10}, an example of an enumerated
-proceedings article \cite{VanGundy07},
-an informally published work \cite{Harel78}, a doctoral dissertation \cite{Clarkson85},
-a master's thesis: \cite{anisi03}, an online document / world wide web resource \cite{Thornburg01}, \cite{Ablamowicz07},
-\cite{Poker06}, a video game (Case 1) \cite{Obama08} and (Case 2) \cite{Novak03}
-and \cite{Lee05} and (Case 3) a patent \cite{JoeScientist001},
-work accepted for publication \cite{rous08}, 'YYYYb'-test for prolific author
-\cite{SaeediMEJ10} and \cite{SaeediJETC10}. Other cites might contain
-'duplicate' DOI and URLs (some SIAM articles) \cite{Kirschmer:2010:AEI:1958016.1958018}.
-Boris / Barbara Beeton: multi-volume works as books
-\cite{MR781536} and \cite{MR781537}.
+\indent To better evaluate our implementation, we needed to use a topology which enabled hosts to communicate over multiple paths simultaneously. We used topology with a total of four switches which created four different paths between two hosts.
 
-\appendix
-
-\section{Classical Multidimensional Scaling}
-\label{sec:cmds}
-
-Let $\mathrm{D}$ be an $n\times n$ matrix of pairwise distances. The
-matrix $D$ is symmetric with a zero diagonal. We are interested in
-finding a $d \times n$ matrix $\mathrm{X}$ where each column
-$\bm{x}_{i}$ is the representation of the point $i$ in $R^{d}$ and
-$\mathrm{D}_{ij} = \|\bm{x}_{i}-\bm{x}_{j}\|_{2}$. Denote the inner
-product (or Gram matrix) for this set of points by $\mathrm{K} =
-\mathrm{X}^{\top}\mathrm{X}$.
+\begin{figure}[h]
+\centerline{\includegraphics[width=8cm]{4switch}}
+\caption{Testing on topology with four switches}
+\label{fig:4switch}
+\end{figure}
 
 
-$\mathrm{K}$ is an $n\times n$ symmetric positive semidefinite matrix.
-Let us now abuse notation and use $\mathrm{D}^{2}$ to indicate the
-matrix of squared pairwise distances $\mathrm{K} =
--\frac{1}{2}(\mathrm{I} -
-\mathrm{1}\mathrm{1}^{\top})\mathrm{D}^{2}(\mathrm{I} -
-\mathrm{1}\mathrm{1}^{\top})$. Here, $\mathrm{I}$ is the $n \times n$
-identity matrix and $\mathrm{1}$ is the $n$-vector of all ones.
+\subsubsection{Controller}
+\indent We have based our controller implementation on RYU controller programmed in Python. The controller has a global view of the network thanks to LLDP exchange during initial switch connection. 
 
-\begin{acks}
-We are grateful to the following people for resources, discussions and
-suggestions: Prof. Jacobo Melamed Cattan (Ophthalmology-UFRGS), Prof.
-Roberto da Silva (UFRGS), Prof. Luis A. V. Carvalho (Optics-USP/SC),
-Prof. Anatolio Laschuk (UFRGS), Leandro Fernandes, Marcos
-Slomp, Leandro Lichtenfelz, Renato Silveira,
-Eduardo Gastal, and Denison Tavares. We also thank the volunteers who
-allowed us to collect pictures and videos of their irises: Alex Gimenes,
-Boris Starov, Christian Pagot, Claudio Menezes, Giovane Kuhn, Jo\~{a}o
-Paulo Gois, Leonardo Schmitz, Rodrigo Mendes, and Tiago Etiene.
-\end{acks}
+\indent Pre-routing procedures of the controller are described in following sentences. When the controller starts, it flushes all database tables from previous connections. It then adds hosts to the topology. After this procedure, controller uses LLDP packets to obtain a global view of the network topology. Controller also installs a rule that tells switches to forward all TCP communication to the controller. 
 
+\indent The algorithm of routing mechanism is described in following paragraph. 
+
+\indent When SYN packet arrives on the switch, it sends it to the controller. Controller parses MPTCP options, IP addresses, TCP ports and every single value contained in the MPTCP options. This information is then stored into conn, which is a MySQL table used for storing MPTCP connections. 
+
+\indent Controller now installs two rules to the forwarder: one rule for source-destination communication and one for destination-sources communication. Both these rules tell the forwarder to send the communication with mentioned IPs and ports to the controller. 
+\indent When SYN-ACK arrives on the controller, our controller parses the needed information and stores it into MySQL database again. 
+\indent When ACK arrives on the controller, it calculates every single possible path between source and destination node and then randomly chooses one of them. This prevents single point of failure in the network and better path diversity in the network. Controller then sends a FLOW\_MOD packet to all switches on the selected path send communication out of the proper port. This prevents further communication forwarding to the controller, since it is not needed anymore. 
+\indent When joining a new subflow to the connection, the process is very similar to initiating the connection.
+\indent The only difference is in the processing of the MP\_JOIN ACK packet, since further actions are needed in order to map subflows to the connection. 
+\indent Controller calculates the hash for the subflow and compares it to the hash included in the MP\_JOIN ACK packet. If the hashes are the same, subflows are authenticated and joined to the connection. 
+
+\section{Evaluation}
+
+	\subsection{Setup}
+	\indent For our evaluation we used the Mininet emulator 2.2.2 installed on the same machine that is running our controller. It is possible to run Mininet on different machine than controller, although few changes to the implementation are needed. 		On the machine that runs our controller also run OpenvSwitch 2.5.
+	\indent Both communicating endpoints were Linux virtual machines running Kernel 4.9 with MPTCP kernel implementation. MPTCP kernel also ran on Controller machine, although this was not necessary. Both host machines had two interfaces connected to our controller machine using virtual internal networks. 
+
+	
+		\subsubsection{Topology}
+		\indent We evaluated our implementation on smaller topologies described previously in this paper. Evaluation on bigger datacenter topologies like Fattree or Jellyfish can be evaluted later.
+
+		\subsubsection{Experiments}
+		\indent Our implementation was tested using iperf network program, that creates communication between hosts and can also limit bandwidth of the communication, create parallel TCP communications, etc. 
+		\indent We ran iperf in server mode on Host2 and connected to it from iperf ran in client mode on Host1. We tested our implementation while also limiting the communication speed.
+
+
+	\subsection{Results}
+
+
+\section{Conclusion}
+
+\newpage
 % Bibliography
 \bibliographystyle{ACM-Reference-Format-Journals}
 \bibliography{acmtog-sample-bibfile}
