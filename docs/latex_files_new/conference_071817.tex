@@ -243,7 +243,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 		\label{fig:graph12}
 		\end{figure}
 		
-		\indent MPTCP kernel implementation enables us to use more than one subflow between one pair of IP addresses. For example, when creating fullmesh subflows between two hosts with two interfaces and two subflows per IP pair, a total of 8 subflows will be created. In our tests we compared bandwidth when using one and two subflows between one pair of IP addresses. We did not see any throughput improvement when using more than two subflows per one IP pair probably due to massive packet reordering. Graph \ref{fig:graph12} shows results of these tests. As we can see, on average 3.1 paths were utilized when using deterministic subflow routing. Shortest path forwarding only used one path, since it always chose one shortest path. While using two subflows per pair of IP address we were able to improve path utilization even better. In every experiment deterministic subflow routing utilised every single path available while creating better path redundancy and slightly improving network throughput. Shortest path forwarding still performed poorly as it only created one path. 
+		\indent MPTCP kernel implementation enables us to use more than one subflow between one pair of IP addresses. For example, when creating fullmesh subflows between two hosts with two interfaces and two subflows per IP pair, a total of 8 subflows will be created. In our tests we compared bandwidth when using one and two subflows between one pair of IP addresses. We did not see any throughput improvement when using more than two subflows per one IP pair probably due to massive packet reordering. Graph number \ref{fig:graph12} shows results of these tests. As we can see, on average 3.1 paths were utilized when using deterministic subflow routing. Shortest path forwarding only used one path, since it always chose one shortest path. While using two subflows per pair of IP address we were able to improve path utilization even better. In every experiment deterministic subflow routing utilised every single path available while creating better path redundancy and slightly improving network throughput. Shortest path forwarding still performed poorly as it only created one path. 
 				
 	%\subsubsection{Average throughput - 4 concurrent connections}
 		\begin{figure}[!h]
@@ -252,7 +252,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 		\caption{figure}{Average throughput using 4 concurrent connections - deterministic test vs. SPF test.}
 		\label{fig:graph3}
 		\end{figure}
-		\indent This test was performed using 4 concurrent MPTCP connections between client and server. Same experiment was executed for 4 times and the average throughtput was calculated for deterministic tests as well as for SPF test. Graph \ref{fig:graph3} shows these values. In this tests, SPF test was slightly outperformed by deterministic test.
+		\indent This test was performed using 4 concurrent MPTCP connections between client and server. Same experiment was executed for 4 times and the average throughtput was calculated for deterministic tests as well as for SPF test. Graph number \ref{fig:graph3} shows these values. In this tests, SPF test was slightly outperformed by deterministic test.
 			
 		%\subsubsection{Download of 100MB file}	
 		\begin{figure}[!h]
@@ -267,6 +267,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 		\subfloat[]{\includegraphics[width=8cm]{graph6}} \hfill
 		\caption{Bandwidth during 100MB file download - deterministic vs. SPF.}
 		\end{figure}
+		\indent Last couple of tests we used to evaluate our implementation were downloading a file from the server using protocol SSH. We created sample file with 100MB in size. The file was then downloaded by the client. In graph number \ref{fig:graph5} we can see the time spent to download this file. Test were performed using our implementation and using SPF approach for subflow routing both using one subflow per pair of IP addresses and two subflows per one per of IP addresses. As we can see, in both tests our implementation slightly outperformed SPF implementation. On graph number \ref{graph6} we can see the speed of this download while using both approaches and both number of subflows between IP address pair. 
 			
 		%\subsubsection{Worst vs. average throughput}
 		%\begin{figure}[!h]
