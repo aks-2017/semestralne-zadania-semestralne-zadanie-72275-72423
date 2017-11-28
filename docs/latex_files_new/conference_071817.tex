@@ -2,6 +2,7 @@
 \IEEEoverridecommandlockouts
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
+\usepackage{float}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
@@ -12,13 +13,13 @@
 
 \title{Exploiting Path Diversity in Datacenters using MPTCP-aware SDN}
 
-\author{\IEEEauthorblockN{Tomas Urban}
+\author{\IEEEauthorblockN{Bc. Tomas Urban}
 \IEEEauthorblockA{\textit{Faculty of Informatics and Information Technologies}\\
 \textit{Slovak Technical University in Bratislava}\\
 Bratislava, Slovakia \\
 xurbant@stuba.sk}
 \and
-\IEEEauthorblockN{Martin Oravsky}
+\IEEEauthorblockN{Bc. Martin Oravsky}
 \IEEEauthorblockA{\textit{Faculty of Informatics and Information Technologies}\\
 \textit{Slovak Technical University in Bratislava}\\
 Bratislava, Slovakia \\
@@ -160,7 +161,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 
 \indent The shortest paths available will be computed using a graph traversal algorithm. Sets of paths will be stored on controller and these will be deterministically assigned to subflows. While using multiple redundant paths, MPTCP’s performance should be maximized using a small number of subflows. Each path should be assigned to only one subflow, this can be achieved by storing IP addresses to paths.
 
-\indent When a new packet arrives on the controller, it will extract the needed information from the packet (IPs, ports, MPTCP options). If the option says we are dealing with a new subflow (MP\_CAPABLE), it will find the shortest path between IPs and store the path into a hashtable. This path is then assigned to a subflow. If the options says we are dealing with additional subflow (M \_JOIN), we extract the token from the packet and find another shortest path for the subflow. The rules are installed on all switches belonging to the chosen path.
+\indent When a new packet arrives on the controller, it will extract the needed information from the packet (IPs, ports, MPTCP options). If the option says we are dealing with a new subflow (MP\_CAPABLE), it will find the shortest path between IPs and store the path into a hashtable. This path is then assigned to a subflow. If the options says we are dealing with additional subflow (MP\_JOIN), we extract the token from the packet and find another shortest path for the subflow. The rules are installed on all switches belonging to the chosen path.
 
 \subsection{Testbed}
 ~\indent To properly evaluate the algorithm, a virtual testbed will be needed. The tests will be performed on a Linux virtual machine running Floodlight controller and Mininet emulator. We create two more Linux virtual machines with multiple interfaces that will be connected to ports on the switches emulated in Mininet. After running FatTree topology in Mininet, we will evaluate how many subflows are needed in order to maximize MPTCP performance. We will then compare this approach to random approach used by ECMP protocol. 
@@ -216,8 +217,49 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 		
 		\indent We ran iperf in server mode on Host2 and connected to it from iperf ran in client mode on Host1. We tested our implementation while also limiting the communication speed.
 
+	
+	\subsection{Tests}
+	\indent In order to test our algorithm, we executed five different kinds of tests. Following tests were executed:
+	
+	\begin{enumerate}
+	\item Utilization of different paths using 1 subflow between two hosts - deterministic test vs. random test.
+	\item Utilization of different paths using 2 subflows between two hosts - deterministic test vs. random test.
+	\item Average throughput using 4 concurrent connections - deterministic test vs. random test.
+	\item Percentage ratio of worst throughput vs. average throughput using 5 concurrent connections - deterministic test vs. random test.
+	\item Download of file with 100MB file size - deterministic vs. random.
+	\end{enumerate}
 
+	
 	\subsection{Results}
+	\indent In following subsection we present results of our test with brief sumarization.
+	
+	\subsubsection{Utilization of paths - 1 subflow and 2 subflows}
+		
+		\begin{figure}[H]
+		\centerline{\includegraphics[width=7cm]{graph12}}
+		\caption{Utilization of different paths using 1 and 2 subflows between two hosts - deterministic test vs. random test.}
+		\label{fig:graph12}
+		\end{figure}
+
+	\subsubsection{Average throughput - 4 concurrent connect.}
+		
+		\begin{figure}[h]
+		\centerline{\includegraphics[width=7cm]{graph3}}
+		\caption{Average throughput using 4 concurrent connections - deterministic test vs. random test.}
+		\label{fig:graph3}
+		\end{figure}
+		
+	\subsubsection{Worst vs. average throughput}
+		
+		
+	\subsubsection{Download of 100MB file}
+		
+		\begin{figure}[h]
+		\centerline{\includegraphics[width=7cm]{graph5}}
+		\caption{Download of file with 100MB file size - deterministic vs. random.}
+		\label{fig:graph5}
+		\end{figure}
+	
 
 
 \section{Conclusion}
