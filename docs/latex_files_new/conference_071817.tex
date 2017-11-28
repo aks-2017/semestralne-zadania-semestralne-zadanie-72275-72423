@@ -165,7 +165,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 \indent When a new packet arrives on the controller, it will extract the needed information from the packet (IPs, ports, MPTCP options). If the option says we are dealing with a new subflow (MP\_CAPABLE), it will find the shortest path between IPs and store the path into a hashtable. This path is then assigned to a subflow. If the options says we are dealing with additional subflow (MP\_JOIN), we extract the token from the packet and find another shortest path for the subflow. The rules are installed on all switches belonging to the chosen path.
 
 \subsection{Testbed}
-~\indent To properly evaluate the algorithm, a virtual testbed will be needed. The tests will be performed on a Linux virtual machine running Floodlight controller and Mininet emulator. We create two more Linux virtual machines with multiple interfaces that will be connected to ports on the switches emulated in Mininet. After running FatTree topology in Mininet, we will evaluate how many subflows are needed in order to maximize MPTCP performance. We will then compare this approach to random approach used by ECMP protocol. 
+~\indent To properly evaluate the algorithm, a virtual testbed will be needed. The tests will be performed on a Linux virtual machine running Floodlight controller and Mininet emulator. We create two more Linux virtual machines with multiple interfaces that will be connected to ports on the switches emulated in Mininet. After running particular topology in Mininet, we will evaluate how many subflows are needed in order to maximize MPTCP performance. We will then compare this approach to random approach used by ECMP protocol. 
 
 \section{System overview}
 \subsection{Topology}
@@ -217,7 +217,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 		\subsubsection{Experiments}
 		 \indent Our implementation was tested using iperf network program, that creates communication between hosts and can also limit bandwidth of the communication, create parallel TCP communications, etc. 
 		
-		\indent We ran iperf in server mode on Host2 and connected to it from iperf ran in client mode on Host1. We tested our implementation while also limiting the communication speed.
+		\indent We ran iperf in server mode on Host2 and connected to it from iperf ran in client mode on Host1. We have also executed tests using SCP protocol, simulating file downloads etc. We tested our implementation while also limiting the communication speed.
 
 	
 	\subsection{Tests}
@@ -238,7 +238,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 		%\subsubsection{Utilization of paths - 1 subflow and 2 subflows}
 		\begin{figure}[!h]
 		\centering
-		\subfloat[]{\includegraphics[width=8cm]{graph12}} \hfill
+		\includegraphics[width=8cm]{graph12} \hfill
 		\caption{Utilization of different paths using 1 and 2 subflows between two hosts - deterministic test vs. SPF test.}
 		\label{fig:graph12}
 		\end{figure}
@@ -248,7 +248,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 	%\subsubsection{Average throughput - 4 concurrent connections}
 		\begin{figure}[!h]
 		\centering
-		\subfloat[]{\includegraphics[width=8cm]{graph3}} \hfill
+		\includegraphics[width=8cm]{graph3}\hfill
 		\caption{figure}{Average throughput using 4 concurrent connections - deterministic test vs. SPF test.}
 		\label{fig:graph3}
 		\end{figure}
@@ -257,17 +257,18 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 		%\subsubsection{Download of 100MB file}	
 		\begin{figure}[!h]
 		\centering
-		\subfloat[]{\includegraphics[width=8cm]{graph5}} \hfill
+		\includegraphics[width=8cm]{graph5} \hfill
 		\caption{Time spent to download 100MB file - deterministic vs. SPF}
 		\label{fig:graph5}
 		\end{figure}
 		
 		\begin{figure}[!h]
 		\centering
-		\subfloat[]{\includegraphics[width=8cm]{graph6}} \hfill
+		\includegraphics[width=8cm]{graph6} \hfill
 		\caption{Bandwidth during 100MB file download - deterministic vs. SPF.}
+		\label{fig:graph6}
 		\end{figure}
-		\indent Last couple of tests we used to evaluate our implementation were downloading a file from the server using protocol SSH. We created sample file with 100MB in size. The file was then downloaded by the client. In graph number \ref{fig:graph5} we can see the time spent to download this file. Test were performed using our implementation and using SPF approach for subflow routing both using one subflow per pair of IP addresses and two subflows per one per of IP addresses. As we can see, in both tests our implementation slightly outperformed SPF implementation. On graph number \ref{graph6} we can see the speed of this download while using both approaches and both number of subflows between IP address pair. 
+		\indent Last couple of tests we used to evaluate our implementation were downloading a file from the server using protocol SSH. We created sample file with 100MB in size. The file was then downloaded by the client. In graph number \ref{fig:graph5} we can see the time spent to download this file. Test were performed using our implementation and using SPF approach for subflow routing both using one subflow per pair of IP addresses and two subflows per one per of IP addresses. As we can see, in both tests our implementation slightly outperformed SPF implementation. On graph number \ref{fig:graph6} we can see the speed of this download while using both approaches and both number of subflows between IP address pair. 
 			
 		%\subsubsection{Worst vs. average throughput}
 		%\begin{figure}[!h]
