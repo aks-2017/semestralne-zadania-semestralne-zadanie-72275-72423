@@ -7,6 +7,9 @@
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
+\usepackage{subfig}
+\usepackage{fixltx2e}
+\usepackage{stfloats}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -30,13 +33,11 @@ xoravskym@stuba.sk}
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
+Multipath TCP (MPTCP) has been proposed as an alternative transport approach mainly for datacenter networks. MPTCP provides the ability to split a flow into multiple paths providing better performance and resilience to failures. MPTCP is combined with flow-based Equal-Cost Multi-Path Routing (ECMP), which uses random hashing to split the MPTCP subflows over different paths. Random hashing can be suboptimal as distinct subflows may end up using the same paths, while other available paths remain unutilized. In our solution we create an MPTCP-aware SDN controller that facilitates an alternative routing mechanism for the MPTCP subflows. Our controller uses packet inspection providing deterministic assignment of subflows. Using this approach we demonstrate better performance while there is no limitation regarding access links of particular hosts. We also investigate the usage of multiple interfaces at the hosts in order to eliminate limitation of throughput due to access links.
 \end{abstract}
 
 \begin{IEEEkeywords}
-component, formatting, style, styling, insert
+mptcp, multipath, sdn, controller, subflow, ecmp
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -191,6 +192,7 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 \indent When SYN packet arrives on the switch, it sends it to the controller. Controller parses MPTCP options, IP addresses, TCP ports and every single value contained in the MPTCP options. This information is then stored into conn, which is a MySQL table used for storing MPTCP connections. 
 
 \indent Controller now installs two rules to the forwarder: one rule for source-destination communication and one for destination-sources communication. Both these rules tell the forwarder to send the communication with mentioned IPs and ports to the controller. 
+
 \indent When SYN-ACK arrives on the controller, our controller parses the needed information and stores it into MySQL database again. 
 
 \indent When ACK arrives on the controller, it calculates every single possible path between source and destination node and then randomly chooses one of them. This prevents single point of failure in the network and better path diversity in the network. Controller then sends a FLOW\_MOD packet to all switches on the selected path send communication out of the proper port. This prevents further communication forwarding to the controller, since it is not needed anymore. 
@@ -222,47 +224,64 @@ that makes software defined networks MPTCP-aware by exploiting path diversity.
 	\indent In order to test our algorithm, we executed five different kinds of tests. Following tests were executed:
 	
 	\begin{enumerate}
-	\item Utilization of different paths using 1 subflow between two hosts - deterministic test vs. random test.
-	\item Utilization of different paths using 2 subflows between two hosts - deterministic test vs. random test.
-	\item Average throughput using 4 concurrent connections - deterministic test vs. random test.
-	\item Percentage ratio of worst throughput vs. average throughput using 5 concurrent connections - deterministic test vs. random test.
-	\item Download of file with 100MB file size - deterministic vs. random.
+	\item Utilization of different paths using 1 subflow between two hosts - deterministic test vs. shortest path forwarding test.
+	\item Utilization of different paths using 2 subflows between two hosts - deterministic test vs. shortest path forwarding test.
+	\item Average throughput using 4 concurrent connections - deterministic test vs. shortest path forwarding test.
+	\item Percentage ratio of worst throughput vs. average throughput using 5 concurrent connections - deterministic test vs. shortest path forwarding test.
+	\item Download of file with 100MB file size - deterministic vs. shortest path forwarding.
 	\end{enumerate}
 
 	
 	\subsection{Results}
 	\indent In following subsection we present results of our test with brief sumarization.
 	
-	\subsubsection{Utilization of paths - 1 subflow and 2 subflows}
-		
-		\begin{figure}[H]
-		\centerline{\includegraphics[width=7cm]{graph12}}
-		\caption{Utilization of different paths using 1 and 2 subflows between two hosts - deterministic test vs. random test.}
+		%\subsubsection{Utilization of paths - 1 subflow and 2 subflows}
+		\begin{figure}[!h]
+		\centering
+		\subfloat[]{\includegraphics[width=8cm]{graph12}} \hfill
+		\caption{Utilization of different paths using 1 and 2 subflows between two hosts - deterministic test vs. SPF test.}
 		\label{fig:graph12}
 		\end{figure}
-
-	\subsubsection{Average throughput - 4 concurrent connect.}
 		
-		\begin{figure}[h]
-		\centerline{\includegraphics[width=7cm]{graph3}}
-		\caption{Average throughput using 4 concurrent connections - deterministic test vs. random test.}
+		\indent MPTCP kernel implementation enables us to use more than one subflow between one pair of IP addresses. For example, when creating fullmesh subflows between two hosts with two interfaces and two subflows per IP pair, a total of 8 subflows will be created. In our tests we compared bandwidth when using one and two subflows between one pair of IP addresses. We did not see any throughput improvement when using more than two subflows per one IP pair probably due to massive packet reordering. Graph \ref{fig:graph12} shows results of these tests. As we can see, on average 3.1 paths were utilized when using deterministic subflow routing. Shortest path forwarding only used one path, since it always chose one shortest path. While using two subflows per pair of IP address we were able to improve path utilization even better. In every experiment deterministic subflow routing utilised every single path available while creating better path redundancy and slightly improving network throughput. Shortest path forwarding still performed poorly as it only created one path. 
+				
+	%\subsubsection{Average throughput - 4 concurrent connections}
+		\begin{figure}[!h]
+		\centering
+		\subfloat[]{\includegraphics[width=8cm]{graph3}} \hfill
+		\caption{figure}{Average throughput using 4 concurrent connections - deterministic test vs. SPF test.}
 		\label{fig:graph3}
 		\end{figure}
-		
-	\subsubsection{Worst vs. average throughput}
-		
-		
-	\subsubsection{Download of 100MB file}
-		
-		\begin{figure}[h]
-		\centerline{\includegraphics[width=7cm]{graph5}}
-		\caption{Download of file with 100MB file size - deterministic vs. random.}
+		\indent This test was performed using 4 concurrent MPTCP connections between client and server. Same experiment was executed for 4 times and the average throughtput was calculated for deterministic tests as well as for SPF test. Graph \ref{fig:graph3} shows these values. In this tests, SPF test was slightly outperformed by deterministic test.
+			
+		%\subsubsection{Download of 100MB file}	
+		\begin{figure}[!h]
+		\centering
+		\subfloat[]{\includegraphics[width=8cm]{graph5}} \hfill
+		\caption{Time spent to download 100MB file - deterministic vs. SPF}
 		\label{fig:graph5}
 		\end{figure}
+		
+		\begin{figure}[!h]
+		\centering
+		\subfloat[]{\includegraphics[width=8cm]{graph6}} \hfill
+		\caption{Bandwidth during 100MB file download - deterministic vs. SPF.}
+		\end{figure}
+			
+		%\subsubsection{Worst vs. average throughput}
+		%\begin{figure}[!h]
+		\indent During our tests we also compared worst throughput of conncurrent connections with average throughput. 
+				
+		\indent Both approaches to routing multipath traffic were tested 3 three times. SPF approach surprisingly performed much better than our deterministic approach. The throughputs were very similar in both approaches, however, in shortest path forwarding approach, each test performed very similar, thus creating very small difference between worst throughput and average throughput. 
+				
+		\indent In deterministic approach, worst throughput was approximately 75\% of average throughput, whereas worst throughput in SPF approach was at least 92\% of average throughput.
+		%\end{figure}
 	
 
 
 \section{Conclusion}
+\indent Lorem ipsum
+
 
 \bibliographystyle{IEEEtran}
 \bibliography{bibfile}
